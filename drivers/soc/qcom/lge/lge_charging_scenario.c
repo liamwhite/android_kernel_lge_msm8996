@@ -22,11 +22,7 @@
 #ifdef DEBUG_LCS
 /* For fake battery temp' debug */
 #ifdef DEBUG_LCS_DUMMY_TEMP
-#ifdef CONFIG_MACH_MSM8996_H1
-static int dummy_temp = 25;
-#else
 static int dummy_temp = 250;
-#endif
 static int time_order = 1;
 #endif
 #endif
@@ -40,21 +36,21 @@ static int time_order = 1;
 static struct batt_temp_table chg_temp_table[CHG_MAXIDX] = {
 #ifdef CONFIG_MACH_MSM8996_H1
 #ifdef CONFIG_LGE_PM_OTP_SCENARIO_FOR_SPRINT
-	{INT_MIN,        -6,    CHG_BATTEMP_BL_UT},
-	{     -5,        -3,    CHG_BATTEMP_M5_M3},
-	{     -2,        39,    CHG_BATTEMP_M2_39},
-	{     40,        42,    CHG_BATTEMP_40_42},
-	{     43,        50,    CHG_BATTEMP_43_50},
-	{     51,        52,    CHG_BATTEMP_51_OT},
-	{     53,   INT_MAX,    CHG_BATTEMP_AB_OT},
+	{INT_MIN,       -60,    CHG_BATTEMP_BL_UT},
+	{    -59,       -30,    CHG_BATTEMP_M5_M3},
+	{    -29,       399,    CHG_BATTEMP_M2_39},
+	{    400,       420,    CHG_BATTEMP_40_42},
+	{    421,       500,    CHG_BATTEMP_43_50},
+	{    501,       520,    CHG_BATTEMP_51_OT},
+	{    521,   INT_MAX,    CHG_BATTEMP_AB_OT},
 #else
-	{INT_MIN,       -11,    CHG_BATTEMP_BL_UT},
-	{    -10,        -5,    CHG_BATTEMP_M10_M5},
-	{     -4,        39,    CHG_BATTEMP_M4_39},
-	{     40,        42,    CHG_BATTEMP_40_42},
-	{     43,        51,    CHG_BATTEMP_43_51},
-	{     52,        54,    CHG_BATTEMP_52_OT},
-	{     55,   INT_MAX,    CHG_BATTEMP_AB_OT},
+	{INT_MIN,      -110,    CHG_BATTEMP_BL_UT},
+	{   -109,       -50,    CHG_BATTEMP_M10_M5},
+	{    -49,       399,    CHG_BATTEMP_M4_39},
+	{    400,       420,    CHG_BATTEMP_40_42},
+	{    421,       510,    CHG_BATTEMP_43_51},
+	{    511,       540,    CHG_BATTEMP_52_OT},
+	{    541,   INT_MAX,    CHG_BATTEMP_AB_OT},
 #endif
 #else
 #ifdef CONFIG_LGE_PM_OTP_SCENARIO_FOR_SPRINT
@@ -148,24 +144,14 @@ static int last_thermal_current;
 #define MAX_BATT_TEMP_CHECK_COUNT 2
 static int adjust_batt_temp(int batt_temp)
 {
-#ifdef CONFIG_MACH_MSM8996_H1
-	static int prev_batt_temp = 25;
-#else
 	static int prev_batt_temp = 250;
-#endif
 	static int count = 1;
 
 	pr_info("before adjust batt_temp = %d\n", batt_temp);
 
-#ifdef CONFIG_MACH_MSM8996_H1
-	if (batt_temp >= 40 && batt_temp <= 50
-		&& batt_temp - prev_batt_temp > -2
-		&& batt_temp - prev_batt_temp < 3) {
-#else
 	if (batt_temp >= 400 && batt_temp <= 500
 		&& batt_temp - prev_batt_temp > -20
 		&& batt_temp - prev_batt_temp < 30) {
-#endif
 
 		if (batt_temp == prev_batt_temp)
 			count++;
@@ -335,22 +321,12 @@ void lge_monitor_batt_temp(struct charging_info req, struct charging_rsp *res)
 #ifdef DEBUG_LCS
 #ifdef DEBUG_LCS_DUMMY_TEMP
 	if (time_order == 1) {
-#ifdef CONFIG_MACH_MSM8996_H1
-		dummy_temp++;
-		if (dummy_temp > 65)
-#else
 		dummy_temp = dummy_temp + 10;
 		if (dummy_temp > 650)
-#endif
 			time_order = 0;
 	} else {
-#ifdef CONFIG_MACH_MSM8996_H1
-		dummy_temp--;
-		if (dummy_temp < -15)
-#else
 		dummy_temp = dummy_temp - 10;
 		if (dummy_temp < -150)
-#endif
 			time_order = 1;
 	}
 
